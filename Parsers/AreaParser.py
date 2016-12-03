@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 
 
-def _parse_price(string):
-    cleaned = string.replace(' ', '')
-    position = cleaned.find('РУБ.')
+def _parse_area(string):
+    cleaned = string.replace(',', '.')
+    position = cleaned.find('м')
     final = cleaned[:position]
     try:
         final = float(final)
@@ -14,11 +14,11 @@ def _parse_price(string):
     return final
 
 
-def parse_price(dataframe, column_name='_PRICE_'):
-    func = np.vectorize(_parse_price)
+def parse_area(dataframe, column_name='_AREA_'):
+    func = np.vectorize(_parse_area)
     dataframe.loc[:, column_name] = func(dataframe.loc[:, column_name])
 
 if __name__ == '__main__':
     data = pd.read_csv('../champ1_train.csv')
-    parse_price(data)
+    parse_area(data)
     print(data.head())
