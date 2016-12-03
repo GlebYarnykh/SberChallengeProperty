@@ -17,6 +17,7 @@ def _parse_area(string):
 def parse_area(dataframe, column_name='_AREA_'):
     func = np.vectorize(_parse_area)
     dataframe.loc[:, column_name] = func(dataframe.loc[:, column_name])
+    return dataframe
 
 if __name__ == '__main__':
     data = pd.read_csv('../champ1_train.csv')

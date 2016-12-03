@@ -17,6 +17,7 @@ def _parse_price(string):
 def parse_price(dataframe, column_name='_PRICE_'):
     func = np.vectorize(_parse_price)
     dataframe.loc[:, column_name] = func(dataframe.loc[:, column_name])
+    return dataframe
 
 if __name__ == '__main__':
     data = pd.read_csv('../champ1_train.csv')
