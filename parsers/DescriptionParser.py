@@ -9,6 +9,10 @@ import requests
 morph = pymorphy2.MorphAnalyzer()
 
 
+def _to_unicode(text):
+    return unicode(text, 'utf-8')
+
+
 def _request_spelling(text):
     params = {'text': text,
               'lang': 'ru',
@@ -28,10 +32,11 @@ def _correct_spelling(text):
                 error = rj[i]
                 if error[u'code'] == 1:
                     suggestions = [v for v in error[u's']]
-                    suggestion = suggestions[0]
-                    start = error[u'pos']
-                    end = start + error[u'len']
-                    text = text[:start] + text[start:end].replace(error[u'word'], suggestion) + text[end:]
+                    if suggestions:
+                        suggestion = suggestions[0]
+                        start = error[u'pos']
+                        end = start + error[u'len']
+                        text = text[:start] + text[start:end].replace(error[u'word'], suggestion) + text[end:]
                 if error[u'code'] == 2:
                     start = error[u'pos']
                     end = start + error[u'len']
@@ -42,7 +47,6 @@ def _correct_spelling(text):
 
 
 def _tokenize(description):
-    description = unicode(description, 'utf-8')
     tokens = nltk.wordpunct_tokenize(description)
     return tokens
 
@@ -57,20 +61,22 @@ def _lemmatize(word):
 _lemmatize_list = np.vectorize(_lemmatize)
 
 
+def _parse_descripton(text):
+    text = _to_unicode(text)
+    text = _correct_spelling(text)
+    tokens = _tokenize(text)
+    lemmas = _lemmatize_list(tokens)
+    final = ' '.join(lemmas)
+    return final
+
+
 def parse_description(dataframe, column_name='_DESC_'):
+    func = np.vectorize(_parse_descripton)
+    dataframe.loc[:, column_name] = func(dataframe.loc[:, column_name])
     return dataframe
 
 if __name__ == '__main__':
     data = pd.read_csv('../champ1_train.csv')
-    N = 3
-    test_cases = []
-    tokens = []
-    lemmas = []
-    string = []
-    for i in xrange(N):
-        test_cases.append(data['_DESC_'][i])
-        test_cases[i] = _correct_spelling(test_cases[i])
-        tokens.append(_tokenize(test_cases[i]))
-        lemmas.append(_lemmatize_list(tokens[i]))
-        string.append(' '.join(lemmas[i]))
-        print(string[i])
+    subset = data.iloc[:10, :]
+    result = parse_description(subset)
+    print(result.head())
