@@ -6,7 +6,12 @@
           <option name="url" value="http://github.com" />
           <option name="userName" value="Mikhail-Borisov" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://github.com/Mikhail-Borisov/bcs_quants_challenge.git" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
+    <option name="cloneParentDir" value="$USER_HOME$/Projects/Python/bcs_quants_challenge" />
   </component>
 </application>
